@@ -1,0 +1,53 @@
+plugins {
+    id 'application'
+}
+
+javafx {
+    version = '21.0.5'
+    modules = ['javafx.controls', 'javafx.media']
+}
+
+application {
+    mainClass = 'com.fileforge.desktop.MainApp'
+    applicationName = 'fileforge'
+}
+
+dependencies {
+    implementation project(':core')
+}
+
+// JavaFX 模块路径（从 javafx-sdk lib 目录加载）
+tasks.named('run') {
+    mainClass = 'com.fileforge.desktop.MainApp'
+}
+
+dependencies {
+    // 显式声明 JavaFX 依赖（从本地 lib 目录）
+    runtimeOnly files(
+        "${project.rootDir}/../core/libs/javafx-controls-21.0.5.jar",
+        "${project.rootDir}/../core/libs/javafx-graphics-21.0.5.jar",
+        "${project.rootDir}/../core/libs/javafx-media-21.0.5.jar",
+        "${project.rootDir}/../core/libs/javafx-fxml-21.0.5.jar",
+        "${project.rootDir}/../core/libs/javafx-base-21.0.5.jar",
+        "${project.rootDir}/../core/libs/javafx-swing-21.0.5.jar",
+        "${project.rootDir}/../core/libs/javafx-web-21.0.5.jar"
+    )
+}
+
+// 复制 JavaFX jars 到 libs 目录（如果不存在）
+tasks.register('copyJavaFxJars', Copy) {
+    from "D:/Application/Compiler/Java/Zulu/javafx-sdk-21.0.12/lib"
+    into "$buildDir/javafx-libs"
+    include "*.jar"
+}
+
+tasks.named('compileJava') {
+    dependsOn 'copyJavaFxJars'
+    doLast {
+        def javafxLibs = file("build/javafx-libs")
+        if (javafxLibs.exists()) {
+            options.compilerArgs << "--module-path" << javafxLibs.absolutePath
+            options.compilerArgs << "--add-modules" << "javafx.controls,javafx.media"
+        }
+    }
+}

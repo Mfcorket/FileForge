@@ -1,0 +1,14 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositories { mavenCentral() }
+}
+rootProject.name = 'fileforge'
+include 'core'
+include 'desktop'
+// 后续里程碑启用：
+// include 'android'
